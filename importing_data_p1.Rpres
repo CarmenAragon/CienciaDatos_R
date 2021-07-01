@@ -1,0 +1,691 @@
+Importing data
+========================================================
+author:Alán Ponce
+date: `r Sys.Date()` 
+autosize: true 
+
+
+<div align="center">
+<img src="imgs/ia_center.jpeg" width=700 height=600>
+</div>
+
+
+```{r, echo = FALSE}
+
+#-- Load a library
+library(tidyverse)
+library(gapminder)
+library(data.table)
+library(readxl)
+library(gdata)
+library(XLConnect)
+
+
+```
+
+Agenda
+========================================================
+type: section
+
+- Quick recap
+  - Tidyyverse
+- Importing data
+  - read.csv
+  - read.delim
+  - read.table
+  - read_csv
+  - fread
+  - Excel files
+  - Import flat files from the web
+  - JavaScript Object Notation (JSON)
+- Conclusions
+- Q&A
+
+read.csv
+========================================================
+type: section
+
+
+read.csv
+========================================================
+
+- The utils package, which is automatically loaded in your R session on startup, can import CSV files with the read.csv() function.
+
+```{r}
+# Import swimming_pools.csv: pools
+pools <- read.csv("data/swimming_pools.csv")
+
+# Print the structure of pools
+str(pools)
+
+```
+
+read.csv
+========================================================
+
+- With **stringsAsFactors**, you can tell R whether it should convert strings in the flat file to factors.
+
+- For all importing functions in the utils package, this argument is TRUE, which means that you import strings as factors. This only makes sense if the strings you import represent categorical variables in R. If you set stringsAsFactors to FALSE, the data frame columns corresponding to strings in your text file will be character.
+
+```{r}
+
+# Import gapminder data
+data("gapminder")
+
+str(gapminder)
+
+```
+
+read.csv
+========================================================
+
+- The utils package, which is automatically loaded in your R session on startup, can import CSV files with the read.csv() function.
+
+
+```{r}
+
+gapminder_2 <- read.csv("data/gapminder_2.csv", stringsAsFactors = FALSE)
+
+# Check the structure of pools
+str(gapminder_2)
+
+```
+
+read.delim
+========================================================
+
+- Aside from .csv files, there are also the .txt files which are basically text files. You can import these functions with read.delim(). 
+
+- By default, it sets the sep argument to "\t" (fields in a record are delimited by tabs) and the header argument to TRUE (the first row contains the field names).
+
+
+```{r}
+
+# Import hotdogs.txt: hotdogs
+hotdogs <- read.delim("data/hotdogs.txt", header = FALSE)
+#hotdogs
+
+# Summarize hotdogs
+str(hotdogs)
+
+
+```
+
+
+read.delim
+========================================================
+
+- By default, it sets the sep argument to "\t" (fields in a record are delimited by tabs) and the header argument to TRUE (the first row contains the field names).
+
+
+```{r}
+
+# Import hotdogs.txt: hotdogs
+hotdogs <- read.delim("data/hotdogs.txt",  sep = "\t", 
+                      col.names = c("type", "calories", "sodium"))
+
+
+# Call head() on hotdogs
+head(hotdogs)
+
+```
+
+read.table
+========================================================
+
+- It's the most basic importing function; you can specify tons of different arguments in this function.
+
+```{r}
+
+# Path to the hotdogs.txt file: path
+path <- file.path("data", "hotdogs.txt")
+
+# Import the hotdogs.txt file: hotdogs
+hotdogs <- read.table(path, 
+                      sep = "\t", 
+                      col.names = c("type", "calories", "sodium"))
+
+# Call head() on hotdogs
+head(hotdogs)
+
+```
+
+Column classes
+========================================================
+
+- You can also specify the column types or column classes of the resulting data frame
+
+```{r}
+
+
+# Edit the colClasses argument to import the data correctly: hotdogs2
+hotdogs2 <- read.delim("data/hotdogs.txt", 
+                       header = FALSE, 
+                       col.names = c("type", "calories", "sodium"),
+                       colClasses = c("factor", "NULL", "numeric"))
+
+# Display structure of hotdogs2
+str(hotdogs2)
+
+```
+
+read_csv
+========================================================
+type: section
+
+read_csv
+========================================================
+
+- CSV files can be imported with read_csv(). It's a wrapper function around read_delim() that handles all the details for you.
+
+```{r}
+
+# Load the readr package
+#library(readr)
+
+# Import potatoes.csv with read_csv(): potatoes
+potatoes <- read_csv("data/potatoes.csv")
+
+head(potatoes)
+
+```
+
+read_tsv
+========================================================
+
+- Where you use read_csv() to easily read in CSV files, you use read_tsv() to easily read in TSV files. TSV is short for tab-separated values.
+
+```{r}
+
+# Column names
+properties <- c("area", "temp", "size", "storage", "method",
+                "texture", "flavor", "moistness")
+
+# Import potatoes.txt: potatoes
+potatoes <- read_tsv("data/potatoes.txt", col_names = properties)
+
+# Call head() on potatoes
+head(potatoes)
+
+
+```
+
+read_tsv
+========================================================
+
+- You'll again be working potatoes.txt; the file uses tabs ("\t") to delimit values and does not contain column names in its first line.
+
+```{r}
+
+# Column names
+properties <- c("area", "temp", "size", "storage", "method",
+                "texture", "flavor", "moistness")
+
+# Import potatoes.txt using read_delim(): potatoes
+potatoes <- read_delim("data/potatoes.txt", 
+                       delim = "\t", 
+                       col_names = properties)
+
+# Print out potatoes
+potatoes
+
+
+```
+
+skip and n_max
+========================================================
+
+Through skip and n_max you can control which part of your flat file you're actually importing into R.
+
+- skip specifies the number of lines you're ignoring in the flat file before actually starting to import data.
+
+- n_max specifies the number of lines you're actually importing.
+
+```{r}
+
+# Column names
+properties <- c("area", "temp", "size", "storage", "method",
+                "texture", "flavor", "moistness")
+
+# Import 5 observations from potatoes.txt: potatoes_fragment
+potatoes_fragment <- read_tsv("data/potatoes.txt", 
+                              skip = 6, n_max = 5, 
+                              col_names = properties)
+
+#potatoes_fragment <- read_tsv("data/potatoes.txt", skip = 6, n_max = 5)
+
+head(potatoes_fragment)
+
+
+```
+
+
+col_types
+========================================================
+
+- You can also specify which types the columns in your imported data frame should have
+
+```{r}
+
+# Column names
+properties <- c("area", "temp", "size", "storage", "method",
+                "texture", "flavor", "moistness")
+
+# Import all data, but force all columns to be character: potatoes_char
+potatoes_char <- read_tsv("data/potatoes.txt", col_types = "cccccccc", col_names = properties)
+
+# Print out structure of potatoes_char
+str(potatoes_char)
+
+
+```
+
+col_types with collectors:NO
+========================================================
+
+- Another way of setting the types of the imported columns is using collectors. 
+
+- Collector functions can be passed in a list() to the col_types argument of read_ functions to tell them how to interpret values in a column.
+
+```{r}
+
+
+
+# The collectors you will need to import the data
+fac <- col_factor(levels = c("Beef", "Meat", "Poultry"))
+int <- col_integer()
+
+# Edit the col_types argument to import the data correctly: hotdogs_factor
+hotdogs_factor <- read_tsv("data/hotdogs.txt",
+                           col_names = c("type", "calories", "sodium"),
+                           col_types = list(fac, int, int))
+
+# Display the summary of hotdogs_factor
+head(hotdogs_factor)
+
+
+```
+
+fread
+========================================================
+type: section
+
+fread
+========================================================
+
+- Fast and friendly file finagler
+
+- You still remember how to use read.table(), right? Well, fread() is a function that does the same job with very similar arguments
+
+```{r}
+
+# load the data.table package
+#library(data.table)
+
+# Import potatoes.csv with fread(): potatoes
+potatoes <- fread("data/potatoes.csv")
+
+#potatoes <- vroom("data/potatoes.csv")
+
+
+# Print out potatoes
+potatoes
+
+
+```
+
+fread
+========================================================
+
+- Now that you know the basics about fread(), you should know about two arguments of the function: drop and select, to drop or select variables of interest.
+
+```{r}
+
+# Import columns 6 and 8 of potatoes.csv: potatoes
+potatoes <- fread("data/potatoes.csv", select = c(6, 8))
+
+head(potatoes)
+
+# Plot texture (x) and moistness (y) of potatoes
+plot(potatoes$texture, potatoes$moistness)
+
+
+```
+
+Excel files
+========================================================
+type: section
+
+Excel
+========================================================
+
+- Use excel_sheets() to print out the names of the sheets in urbanpop.xlsx
+
+```{r}
+
+# Load the readxl package
+#library(readxl)
+
+# Print the names of all worksheets
+urban_pop <- excel_sheets("data/urbanpop.xlsx")
+#excel_sheets
+
+head(urban_pop)
+
+```
+
+Import an Excel sheet
+========================================================
+
+- Now that you know the names of the sheets in the Excel file you want to import, it is time to import those sheets into R. You can do this with the read_excel() function. Have a look at this recipe:
+
+- data <- read_excel("data.xlsx", sheet = "my_sheet")
+
+```{r}
+
+# Read the sheets, one by one
+pop_1 <- read_excel("data/urbanpop.xlsx", sheet = 1)
+
+head(pop_1)
+
+```
+
+Import an Excel sheet
+========================================================
+
+- Now that you know the names of the sheets in the Excel file you want to import, it is time to import those sheets into R. You can do this with the read_excel() function. Have a look at this recipe:
+
+- data <- read_excel("data.xlsx", sheet = "my_sheet")
+
+```{r}
+
+# Read the sheets, one by one
+pop_2 <- read_excel("data/urbanpop.xlsx", sheet = "1967-1974")
+
+head(pop_2)
+
+```
+
+The col_names argument
+========================================================
+
+- By default it is TRUE, denoting whether the first row in the Excel sheets contains the column names. 
+
+- By default it is TRUE, denoting whether the first row in the Excel sheets contains the column names. If this is not the case, you can set col_names to FALSE. In this case, R will choose column names for you. 
+
+- You can also choose to set col_names to a character vector with names for each column. 
+
+```{r}
+
+# Import the first Excel sheet of urbanpop_nonames.xlsx (R gives names): pop_a
+pop_a <- read_excel("data/urbanpop_nonames.xlsx", col_names = FALSE)
+
+head(pop_a)
+
+```
+
+
+The col_names argument
+========================================================
+
+- By default it is TRUE, denoting whether the first row in the Excel sheets contains the column names. 
+
+- By default it is TRUE, denoting whether the first row in the Excel sheets contains the column names. If this is not the case, you can set col_names to FALSE. In this case, R will choose column names for you. 
+
+- You can also choose to set col_names to a character vector with names for each column. 
+
+```{r}
+
+# Import the first Excel sheet of urbanpop_nonames.xlsx (specify col_names): pop_b
+cols <- c("country", paste0("year_", 1960:1966))
+
+pop_b <- read_excel("data/urbanpop_nonames.xlsx", col_names = cols)
+
+head(pop_b)
+
+```
+
+The skip argument
+========================================================
+
+Another argument that can be very useful when reading in Excel files that are less tidy, is skip. With skip, you can tell R to ignore a specified number of rows inside the Excel sheets you're trying to pull data from. 
+
+> read_excel("data.xlsx", skip = 15)
+
+In this case, the first 15 rows in the first sheet of "data.xlsx" are ignored.
+
+If the first row of this sheet contained the column names, this information will also be ignored by readxl. Make sure to set col_names to FALSE or manually specify column names in this case! 
+
+```{r}
+
+# Import the second sheet of urbanpop.xlsx, skipping the first 21 rows: urbanpop_sel
+urbanpop_sel <- read_excel("data/urbanpop.xlsx", sheet = 2, col_names = FALSE, skip = 21)
+
+head(urbanpop_sel)
+
+# Print out the first observation from urbanpop_sel
+urbanpop_sel[1,]
+
+
+```
+
+Excel (xlsx and xls)
+========================================================
+type: sub-section
+
+Import a local file
+========================================================
+
+
+```{r}
+
+# Import the second sheet of urbanpop.xls: urban_pop
+#urban_pop <- read_excel("data/urbanpop.xls", sheet = "1967-1974")
+
+urban_pop <- read.xls("data/urbanpop.xls", sheet = "1967-1974")
+
+# Print the first 11 observations using head()
+head(urban_pop)
+
+```
+
+read.xls() wraps around read.table()
+========================================================
+ - It basically comes down to two steps: converting the Excel file to a .csv file using a Perl script, and then reading that .csv file with the read.csv() function that is loaded by default in R, through the utils package.
+
+- This means that all the options that you can specify in read.csv(), can also be specified in read.xls().
+
+
+```{r}
+
+# Column names for urban_pop
+columns <- c("country", paste0("year_", 1967:1974))
+
+# Finish the read.xls call
+urban_pop <- read.xls("data/urbanpop.xls", sheet = 2,
+                      skip = 50, header = FALSE, stringsAsFactors = FALSE,
+                      col.names = columns)
+
+# Print first 10 observation of urban_pop
+head(urban_pop)
+
+```
+
+read.xls() wraps around read.table()
+========================================================
+ 
+
+```{r}
+
+# Import all sheets from urbanpop.xls
+path <- "data/urbanpop.xls"
+
+urban_sheet1 <- read.xls(path, sheet = 1, stringsAsFactors = FALSE)
+urban_sheet2 <- read.xls(path, sheet = 2, stringsAsFactors = FALSE)
+urban_sheet3 <- read.xls(path, sheet = 3, stringsAsFactors = FALSE)
+
+# Extend the cbind() call to include urban_sheet3: urban_all
+urban <- cbind(urban_sheet1, urban_sheet2[-1], urban_sheet3[-1])
+
+# Remove all rows with NAs from urban: urban_clean
+urban_clean <- na.omit(urban)
+
+# Print out a summary of urban_clean
+head(urban_clean)
+
+```
+
+Connect to a workbook
+========================================================
+ 
+ Provides comprehensive functionality to read, write and format Excel data.
+ 
+ - <https://cran.microsoft.com/snapshot/2020-04-09/web/packages/XLConnect/index.html>
+ 
+ - <https://github.com/miraisolutions/xlconnect>
+
+```{r}
+
+# Build connection to urbanpop.xlsx: my_book
+my_book <- loadWorkbook("data/urbanpop.xlsx")
+
+# Print out the class of my_book
+class(my_book)
+
+```
+
+List and read Excel sheets
+========================================================
+ 
+```{r}
+
+# List the sheets in my_book
+getSheets(my_book)
+
+
+```
+
+List and read Excel sheets
+========================================================
+ 
+```{r}
+
+# Import the second sheet in my_book
+readWorksheet(my_book, sheet = 2)
+
+```
+
+XLConnect:
+========================================================
+
+- Add worksheet
+  - createSheet()
+- Populate worksheet
+  - writeWorksheet()
+  - saveWorkbook()
+- Renaming sheets
+  - renameSheet()
+- Removing sheets
+  - removeSheet()
+  
+
+Web
+========================================================
+type: section
+
+
+Import flat files from the web
+========================================================
+ 
+```{r}
+
+# https URL to the swimming_pools csv file.
+url_csv <- "https://raw.githubusercontent.com/iacenter/CienciaDatos_R/main/data/swimming_pools.csv"
+
+# Import the file using read.csv(): pools1
+pools1 <- read.csv(url_csv)
+
+head(pools)
+
+```
+
+Import flat files from the web
+========================================================
+ 
+```{r}
+
+# Import the csv file: pools
+url_csv <- "https://raw.githubusercontent.com/iacenter/CienciaDatos_R/main/data/swimming_pools.csv"
+#url_csv
+
+pools <- read_csv(url_csv)
+
+head(pools)
+
+```
+
+Import flat files from the web
+========================================================
+ 
+```{r}
+
+# Import the txt file: potatoes
+url_delim <- "https://raw.githubusercontent.com/iacenter/CienciaDatos_R/main/data/potatoes.txt"
+
+potatoes <- read_tsv(url_delim)
+
+head(potatoes)
+
+```
+
+Import flat files from the web
+========================================================
+ 
+```{r}
+
+# Specification of url: url_xls
+url_xls <- "https://raw.githubusercontent.com/iacenter/CienciaDatos_R/main/data/latitude.xls"
+
+# Download file behind URL, name it local_latitude.xls
+download.file(url_xls, destfile = "data/local_latitude.xls")
+
+# Import the local .xls file with readxl: excel_readxl
+excel_readxl <- read_excel("data/local_latitude.xls")
+
+head(excel_readxl)
+
+```
+
+JavaScript Object Notation (JSON)
+========================================================
+
+```{r}
+
+library(jsonlite)
+
+# wine_json is a JSON
+wine_json <- '{"name":"Chateau Migraine", "year":1997, "alcohol_pct":12.4, "color":"red", "awarded":false}'
+
+# Convert wine_json into a list: wine
+wine <- fromJSON(wine_json)
+
+wine
+
+# Print structure of wine
+str(wine)
+
+```
+
+
+
+Conclusions
+========================================================
+
+
+Q&A
+========================================================
+
+
+
+
+
