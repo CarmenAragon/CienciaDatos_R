@@ -1,7 +1,7 @@
 Cleaning_data
 ========================================================
 author:Alán Ponce
-date: 2021-07-05 
+date: 2021-07-07 
 autosize: true 
 
 
@@ -319,7 +319,9 @@ Gathering columns into key-value pairs
 
 ```r
 # Apply gather() to bmi and save the result as bmi_long
-bmi_long <- gather(bmi, year, bmi_val, -Country)
+bmi_long <- gather(bmi, 
+                   year, bmi_val, 
+                   -Country)
 
 # View the first 20 rows of the result
 head(bmi_long, 10)
@@ -444,10 +446,6 @@ treatments_sep
 6       Y         B 2014    12        6
 ```
 
-
-
-
-
 Uniting columns
 ========================================================
 
@@ -469,8 +467,6 @@ treatments_uni
 5       X         A 2014_12        3
 6       Y         B 2014_12        6
 ```
-
-
 
 
 Uniting columns
@@ -1751,4 +1747,445 @@ head(weather6)
 6                   10             0.00              306
 ```
 
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Importing data part 1
+
+- <https://www.fifa.com/tournaments/womens/womensworldcup/france2019>
+
+
+```r
+# Read in the data from the datasets folder
+wwc_raw <- read_csv("data/2019_WWCFIFA_summary.csv")
+
+# Check the dimensions and structure of the data
+glimpse(wwc_raw)
+```
+
+```
+Rows: 55
+Columns: 13
+$ Round      <chr> "Group stage", "Group stage", "Group stage", "Group stage",…
+$ Wk         <chr> "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1",…
+$ Day        <chr> "Fri", "Sat", "Sat", "Sat", "Sun", "Sun", "Sun", "Mon", "Mo…
+$ Date       <chr> "06/07/19", "06/08/19", "06/08/19", "06/08/19", "06/09/19",…
+$ Time       <time> 21:00:00, 15:00:00, 18:00:00, 21:00:00, 13:00:00, 15:30:00…
+$ Home       <chr> "France", "Germany", "Spain", "Norway", "Australia", "Brazi…
+$ Score      <chr> "4 - 0", "1 - 0", "3 - 1", "3 - 0", "1 - 2", "3 - 0", "2 - …
+$ PKS        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ Away       <chr> "Korea Rep", "China PR", "South Africa", "Nigeria", "Italy"…
+$ Attendance <dbl> 45261, 15283, 12044, 11058, 15380, 17668, 13188, 25055, 107…
+$ Venue      <chr> "Parc des Princes", "Roazhon Park", "Stade Oceane", "Stade …
+$ Referee    <chr> "Claudia Umpierrez", "Marie-Soleil Beaudoin", "Maria Carvaj…
+$ Notes      <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+```
+
+
+Women's Football World Cup 2019 Data
+========================================================
+
+
+```r
+# Check the dimensions and structure of the data
+summary(wwc_raw)
+```
+
+```
+    Round                Wk                Day                Date          
+ Length:55          Length:55          Length:55          Length:55         
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+     Time              Home              Score               PKS           
+ Length:55         Length:55          Length:55          Length:55         
+ Class1:hms        Class :character   Class :character   Class :character  
+ Class2:difftime   Mode  :character   Mode  :character   Mode  :character  
+ Mode  :numeric                                                            
+                                                                           
+                                                                           
+                                                                           
+     Away             Attendance        Venue             Referee         
+ Length:55          Min.   :  8009   Length:55          Length:55         
+ Class :character   1st Qu.: 13476   Class :character   Class :character  
+ Mode  :character   Median : 18934   Mode  :character   Mode  :character  
+                    Mean   : 31777                                        
+                    3rd Qu.: 22941                                        
+                    Max.   :579000                                        
+                    NA's   :3                                             
+    Notes          
+ Length:55         
+ Class :character  
+ Mode  :character  
+                   
+                   
+                   
+                   
+```
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Importing data part 2
+
+Looking at the outputs, we notice a few things about the data. First, we have some NAs to address. Second, most of the columns are of type character. 
+
+
+```r
+# Read in the data
+wwc_raw <- read_csv("data/2019_WWCFIFA_summary.csv",
+                  col_types = cols(
+                                  Round = col_factor(),
+                                  Date = col_date(format = "%m/%d/%y"),
+                                  Venue = col_factor()
+                                  )
+                 )
+            
+# Call summary() and glimpse()
+glimpse(wwc_raw)
+```
+
+```
+Rows: 55
+Columns: 13
+$ Round      <fct> Group stage, Group stage, Group stage, Group stage, Group s…
+$ Wk         <chr> "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1",…
+$ Day        <chr> "Fri", "Sat", "Sat", "Sat", "Sun", "Sun", "Sun", "Mon", "Mo…
+$ Date       <date> 2019-06-07, 2019-06-08, 2019-06-08, 2019-06-08, 2019-06-09…
+$ Time       <time> 21:00:00, 15:00:00, 18:00:00, 21:00:00, 13:00:00, 15:30:00…
+$ Home       <chr> "France", "Germany", "Spain", "Norway", "Australia", "Brazi…
+$ Score      <chr> "4 - 0", "1 - 0", "3 - 1", "3 - 0", "1 - 2", "3 - 0", "2 - …
+$ PKS        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ Away       <chr> "Korea Rep", "China PR", "South Africa", "Nigeria", "Italy"…
+$ Attendance <dbl> 45261, 15283, 12044, 11058, 15380, 17668, 13188, 25055, 107…
+$ Venue      <fct> Parc des Princes, Roazhon Park, Stade Oceane, Stade Auguste…
+$ Referee    <chr> "Claudia Umpierrez", "Marie-Soleil Beaudoin", "Maria Carvaj…
+$ Notes      <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+```
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Importing data part 2
+
+Looking at the outputs, we notice a few things about the data. First, we have some NAs to address. Second, most of the columns are of type character. 
+
+
+```r
+summary(wwc_raw)
+```
+
+```
+             Round         Wk                Day           
+ Group stage    :36   Length:55          Length:55         
+ Round of 16    : 8   Class :character   Class :character  
+ Quarterfinals  : 4   Mode  :character   Mode  :character  
+ Semifinals     : 2                                        
+ 3rd-place match: 1                                        
+ Final          : 1                                        
+ NA's           : 3                                        
+      Date                Time              Home              Score          
+ Min.   :2019-06-07   Length:55         Length:55          Length:55         
+ 1st Qu.:2019-06-12   Class1:hms        Class :character   Class :character  
+ Median :2019-06-17   Class2:difftime   Mode  :character   Mode  :character  
+ Mean   :2019-06-18   Mode  :numeric                                         
+ 3rd Qu.:2019-06-23                                                          
+ Max.   :2019-07-07                                                          
+ NA's   :4                                                                   
+     PKS                Away             Attendance    
+ Length:55          Length:55          Min.   :  8009  
+ Class :character   Class :character   1st Qu.: 13476  
+ Mode  :character   Mode  :character   Median : 18934  
+                                       Mean   : 31777  
+                                       3rd Qu.: 22941  
+                                       Max.   :579000  
+                                       NA's   :3       
+                      Venue      Referee             Notes          
+ Parc des Princes        : 7   Length:55          Length:55         
+ Roazhon Park            : 7   Class :character   Class :character  
+ Stade Oceane            : 7   Mode  :character   Mode  :character  
+ Stade Auguste-Delaune II: 6                                        
+ Stade du Hainaut        : 6                                        
+ (Other)                 :18                                        
+ NA's                    : 4                                        
+```
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Removing rows of NA
+
+We have 55 observations (rows) of 13 variables (columns). Hmmm, we know there were 52 games - why the extra rows? Also Round and Attendance each have three NA, and Date and Venue each have four NA. It looks like we have a few things to fix.
+
+- Rows of NA
+- Missing data values
+- Multiple values in one column (look at Score and PKS)
+- Column headers are a mix of upper- and lowercase letters
+
+The last issue is more of a preference. Having all the column names in the same case will make typing easier
+
+
+```r
+# Remove rows of NA
+wwc_1  <- wwc_raw  %>% 
+             rename_all(tolower)  %>% 
+             filter(!is.na(round))
+
+# Get the dimensions and inspect the first 10 and last 10 rows
+
+head(wwc_1, 10)
+```
+
+```
+# A tibble: 10 x 13
+   round  wk    day   date       time   home  score pks   away  attendance venue
+   <fct>  <chr> <chr> <date>     <time> <chr> <chr> <chr> <chr>      <dbl> <fct>
+ 1 Group… 1     Fri   2019-06-07 21:00  Fran… 4 - 0 <NA>  Kore…      45261 Parc…
+ 2 Group… 1     Sat   2019-06-08 15:00  Germ… 1 - 0 <NA>  Chin…      15283 Roaz…
+ 3 Group… 1     Sat   2019-06-08 18:00  Spain 3 - 1 <NA>  Sout…      12044 Stad…
+ 4 Group… 1     Sat   2019-06-08 21:00  Norw… 3 - 0 <NA>  Nige…      11058 Stad…
+ 5 Group… 1     Sun   2019-06-09 13:00  Aust… 1 - 2 <NA>  Italy      15380 Stad…
+ 6 Group… 1     Sun   NA         15:30  Braz… 3 - 0 <NA>  Jama…      17668 Stad…
+ 7 Group… 1     Sun   2019-06-09 18:00  Engl… 2 - 1 <NA>  Scot…      13188 Stad…
+ 8 Group… 1     Mon   2019-06-10 18:00  Arge… 0 - 0 <NA>  Japan      25055 Parc…
+ 9 Group… 1     Mon   2019-06-10 21:00  Cana… 1 - 0 <NA>  Came…      10710 Stad…
+10 Group… 1     Tue   2019-06-11 15:00  New … 0 - 1 <NA>  Neth…      10654 Stad…
+# … with 2 more variables: referee <chr>, notes <chr>
+```
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Replacing NA
+
+We now have 52 rows. Each row corresponds to a match in the tournament. But, it looks like there are a couple NA still lurking about in date and venue. Using colSums() and is.na() we can check to see how many NA are in each column.
+
+
+
+```r
+# Housekeeping
+wwc_2 <- wwc_1
+
+# Find and replace NA in column date
+index_date <- which(is.na(wwc_2$date))
+
+wwc_2[index_date, ]
+```
+
+```
+# A tibble: 1 x 13
+  round  wk    day   date       time   home  score pks   away  attendance venue 
+  <fct>  <chr> <chr> <date>     <time> <chr> <chr> <chr> <chr>      <dbl> <fct> 
+1 Group… 1     Sun   NA         15:30  Braz… 3 - 0 <NA>  Jama…      17668 Stade…
+# … with 2 more variables: referee <chr>, notes <chr>
+```
+
+```r
+wwc_2$date[index_date] <- "2019-06-09"
+
+#wwc_2[index_date, ]
+```
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Replacing NA
+
+We now have 52 rows. Each row corresponds to a match in the tournament. But, it looks like there are a couple NA still lurking about in date and venue. Using colSums() and is.na() we can check to see how many NA are in each column.
+
+
+
+```r
+# Find and replace NA in column venue
+index_venue <- which(is.na(wwc_2$venue))
+
+wwc_2[index_venue, ]
+```
+
+```
+# A tibble: 1 x 13
+  round   wk    day   date       time   home  score pks   away  attendance venue
+  <fct>   <chr> <chr> <date>     <time> <chr> <chr> <chr> <chr>      <dbl> <fct>
+1 Semifi… SMIF  Tue   2019-07-02 21:00  Engl… 1 - 2 <NA>  USA        53512 <NA> 
+# … with 2 more variables: referee <chr>, notes <chr>
+```
+
+```r
+wwc_2$venue[index_venue] <- "Groupama Stadium"
+
+#wwc_2[index_venue, ]
+```
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- separate() and replace_na()
+
+The data are looking good, but it is a good idea to get the two data points in score and two data points in pks into their own columns for future data sleuthing.
+
+For this task we're going to employ the functionality of separate(), mutate(), and replace_na(). 
+
+
+```r
+# Separate columns and replace NA
+wwc_3  <- wwc_2  %>% 
+  separate(score, c("home_score", "away_score"), sep =  "-", convert = TRUE)  %>% 
+  separate(pks, c("home_pks", "away_pks"), sep = "-", convert = TRUE)  %>% 
+  mutate(home_pks = replace_na(home_pks, 0),
+         away_pks = replace_na(away_pks, 0))
+
+# Print the data
+wwc_3
+```
+
+```
+# A tibble: 52 x 15
+   round    wk    day   date       time   home    home_score away_score home_pks
+   <fct>    <chr> <chr> <date>     <time> <chr>        <dbl>      <int>    <dbl>
+ 1 Group s… 1     Fri   2019-06-07 21:00  France           4          0        0
+ 2 Group s… 1     Sat   2019-06-08 15:00  Germany          1          0        0
+ 3 Group s… 1     Sat   2019-06-08 18:00  Spain            3          1        0
+ 4 Group s… 1     Sat   2019-06-08 21:00  Norway           3          0        0
+ 5 Group s… 1     Sun   2019-06-09 13:00  Austra…          1          2        0
+ 6 Group s… 1     Sun   2019-06-09 15:30  Brazil           3          0        0
+ 7 Group s… 1     Sun   2019-06-09 18:00  England          2          1        0
+ 8 Group s… 1     Mon   2019-06-10 18:00  Argent…          0          0        0
+ 9 Group s… 1     Mon   2019-06-10 21:00  Canada           1          0        0
+10 Group s… 1     Tue   2019-06-11 15:00  New Ze…          0          1        0
+# … with 42 more rows, and 6 more variables: away_pks <dbl>, away <chr>,
+#   attendance <dbl>, venue <fct>, referee <chr>, notes <chr>
+```
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Plotting for outliers
+
+We corrected the NA in the date and venue columns, and separated the score and pks columns to have one score per column.
+
+Let's plot the data to see if there are any outliers.
+
+
+```r
+# Housekeeping for plot size
+options(repr.plot.width=8, repr.plot.height=6)
+
+# Load package
+library(ggplot2)
+
+# Make a boxplot of attendance by venue and add the point data
+ggplot(wwc_3, aes(venue, attendance)) +
+  geom_boxplot() +
+  geom_jitter(color = "red", size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+![plot of chunk unnamed-chunk-51](Cleaning_data-figure/unnamed-chunk-51-1.png)
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- What to do with the outlier?
+
+What’s up with the attendance for Groupama Stadium? One data point is almost 600,000 (6e+05) while all the other data points are less than 100,000. 
+
+There is a mistakenly added an extra 0 in the attendance variable
+
+
+
+```r
+# Print the number of games played at each venue, and the min and max attendance at each venue
+wwc_3  %>% 
+  group_by(venue)  %>% 
+  summarize(nb_of_games = n(), 
+           min_attendance = min(attendance), 
+           max_attendance = max(attendance))
+```
+
+```
+# A tibble: 9 x 4
+  venue                    nb_of_games min_attendance max_attendance
+  <fct>                          <int>          <dbl>          <dbl>
+1 Parc des Princes                   7          20011          45595
+2 Roazhon Park                       7          13201          28267
+3 Stade Oceane                       7          10654          23965
+4 Stade Auguste-Delaune II           6          11058          19633
+5 Stade du Hainaut                   6          15380          22600
+6 Stade des Alpes                    5          11252          17988
+7 Stade de Nice                      6           9354          34872
+8 Stade de la Mosson                 5           8009          17492
+9 Groupama Stadium                   3          48452         579000
+```
+
+
+Women's Football World Cup 2019 Data
+========================================================
+
+
+
+```r
+# Correct the outlier
+wwc_4  <- wwc_3  %>% 
+  mutate(attendance = replace(attendance, which(attendance == 579000), 57900))
+
+# Print the number of games played at each venue, and the min and max attendance at each venue
+wwc_4  %>% 
+  group_by(venue)  %>% 
+  summarize(nb_of_games = n(), 
+           min_attendance = min(attendance), 
+           max_attendance = max(attendance))
+```
+
+```
+# A tibble: 9 x 4
+  venue                    nb_of_games min_attendance max_attendance
+  <fct>                          <int>          <dbl>          <dbl>
+1 Parc des Princes                   7          20011          45595
+2 Roazhon Park                       7          13201          28267
+3 Stade Oceane                       7          10654          23965
+4 Stade Auguste-Delaune II           6          11058          19633
+5 Stade du Hainaut                   6          15380          22600
+6 Stade des Alpes                    5          11252          17988
+7 Stade de Nice                      6           9354          34872
+8 Stade de la Mosson                 5           8009          17492
+9 Groupama Stadium                   3          48452          57900
+```
+
+
+Women's Football World Cup 2019 Data
+========================================================
+
+- Questions:
+
+  - Which match had the highest attendance during the tournament?
+
+  - In what stadium was the match with the highest attendance played?
+
+
+```r
+wwc_4 %>% 
+  select(round, attendance, venue) %>% 
+  arrange(desc(attendance))
+```
+
+```
+# A tibble: 52 x 3
+   round         attendance venue           
+   <fct>              <dbl> <fct>           
+ 1 Final              57900 Groupama Stadium
+ 2 Semifinals         53512 Groupama Stadium
+ 3 Semifinals         48452 Groupama Stadium
+ 4 Quarterfinals      45595 Parc des Princes
+ 5 Group stage        45594 Parc des Princes
+ 6 Group stage        45261 Parc des Princes
+ 7 Round of 16        38078 Parc des Princes
+ 8 Group stage        34872 Stade de Nice   
+ 9 Group stage        28267 Roazhon Park    
+10 Group stage        28205 Parc des Princes
+# … with 42 more rows
+```
 
