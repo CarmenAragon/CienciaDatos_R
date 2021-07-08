@@ -785,7 +785,7 @@ hljs.initHighlightingOnLoad();
   <div class="slides">
 
 <section data-state="section" data-transition="linear" data-transition-speed="default">
-<h1>Cleaning_data</h1><p>Alán Ponce<br/>2021-07-06</p>
+<h1>Cleaning_data</h1><p>Alán Ponce<br/>2021-07-07</p>
 
 <div class="slideContent" >
 <div align="center">
@@ -1096,7 +1096,9 @@ plot(bmi$Y1980, bmi$Y2008)
 <h3>Gathering columns into key-value pairs</h3>
 <div class="slideContent" >
 <pre><code class="r"># Apply gather() to bmi and save the result as bmi_long
-bmi_long &lt;- gather(bmi, year, bmi_val, -Country)
+bmi_long &lt;- gather(bmi, 
+                   year, bmi_val, 
+                   -Country)
 
 # View the first 20 rows of the result
 head(bmi_long, 10)
@@ -2469,6 +2471,461 @@ head(weather6)
 4                    7               NA              286
 5                   10               NA              298
 6                   10             0.00              306
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li><p>Importing data part 1</p></li>
+<li><p><a href="https://www.fifa.com/tournaments/womens/womensworldcup/france2019">https://www.fifa.com/tournaments/womens/womensworldcup/france2019</a></p></li>
+</ul>
+
+<pre><code class="r"># Read in the data from the datasets folder
+wwc_raw &lt;- read_csv(&quot;data/2019_WWCFIFA_summary.csv&quot;)
+
+# Check the dimensions and structure of the data
+glimpse(wwc_raw)
+</code></pre>
+
+<pre><code>Rows: 55
+Columns: 13
+$ Round      &lt;chr&gt; &quot;Group stage&quot;, &quot;Group stage&quot;, &quot;Group stage&quot;, &quot;Group stage&quot;,…
+$ Wk         &lt;chr&gt; &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;,…
+$ Day        &lt;chr&gt; &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sat&quot;, &quot;Sat&quot;, &quot;Sun&quot;, &quot;Sun&quot;, &quot;Sun&quot;, &quot;Mon&quot;, &quot;Mo…
+$ Date       &lt;chr&gt; &quot;06/07/19&quot;, &quot;06/08/19&quot;, &quot;06/08/19&quot;, &quot;06/08/19&quot;, &quot;06/09/19&quot;,…
+$ Time       &lt;time&gt; 21:00:00, 15:00:00, 18:00:00, 21:00:00, 13:00:00, 15:30:00…
+$ Home       &lt;chr&gt; &quot;France&quot;, &quot;Germany&quot;, &quot;Spain&quot;, &quot;Norway&quot;, &quot;Australia&quot;, &quot;Brazi…
+$ Score      &lt;chr&gt; &quot;4 - 0&quot;, &quot;1 - 0&quot;, &quot;3 - 1&quot;, &quot;3 - 0&quot;, &quot;1 - 2&quot;, &quot;3 - 0&quot;, &quot;2 - …
+$ PKS        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ Away       &lt;chr&gt; &quot;Korea Rep&quot;, &quot;China PR&quot;, &quot;South Africa&quot;, &quot;Nigeria&quot;, &quot;Italy&quot;…
+$ Attendance &lt;dbl&gt; 45261, 15283, 12044, 11058, 15380, 17668, 13188, 25055, 107…
+$ Venue      &lt;chr&gt; &quot;Parc des Princes&quot;, &quot;Roazhon Park&quot;, &quot;Stade Oceane&quot;, &quot;Stade …
+$ Referee    &lt;chr&gt; &quot;Claudia Umpierrez&quot;, &quot;Marie-Soleil Beaudoin&quot;, &quot;Maria Carvaj…
+$ Notes      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<pre><code class="r"># Check the dimensions and structure of the data
+summary(wwc_raw)
+</code></pre>
+
+<pre><code>    Round                Wk                Day                Date          
+ Length:55          Length:55          Length:55          Length:55         
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+
+
+
+
+     Time              Home              Score               PKS           
+ Length:55         Length:55          Length:55          Length:55         
+ Class1:hms        Class :character   Class :character   Class :character  
+ Class2:difftime   Mode  :character   Mode  :character   Mode  :character  
+ Mode  :numeric                                                            
+
+
+
+     Away             Attendance        Venue             Referee         
+ Length:55          Min.   :  8009   Length:55          Length:55         
+ Class :character   1st Qu.: 13476   Class :character   Class :character  
+ Mode  :character   Median : 18934   Mode  :character   Mode  :character  
+                    Mean   : 31777                                        
+                    3rd Qu.: 22941                                        
+                    Max.   :579000                                        
+                    NA&#39;s   :3                                             
+    Notes          
+ Length:55         
+ Class :character  
+ Mode  :character  
+
+
+
+
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li>Importing data part 2</li>
+</ul>
+
+<p>Looking at the outputs, we notice a few things about the data. First, we have some NAs to address. Second, most of the columns are of type character. </p>
+
+<pre><code class="r"># Read in the data
+wwc_raw &lt;- read_csv(&quot;data/2019_WWCFIFA_summary.csv&quot;,
+                  col_types = cols(
+                                  Round = col_factor(),
+                                  Date = col_date(format = &quot;%m/%d/%y&quot;),
+                                  Venue = col_factor()
+                                  )
+                 )
+
+# Call summary() and glimpse()
+glimpse(wwc_raw)
+</code></pre>
+
+<pre><code>Rows: 55
+Columns: 13
+$ Round      &lt;fct&gt; Group stage, Group stage, Group stage, Group stage, Group s…
+$ Wk         &lt;chr&gt; &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;,…
+$ Day        &lt;chr&gt; &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sat&quot;, &quot;Sat&quot;, &quot;Sun&quot;, &quot;Sun&quot;, &quot;Sun&quot;, &quot;Mon&quot;, &quot;Mo…
+$ Date       &lt;date&gt; 2019-06-07, 2019-06-08, 2019-06-08, 2019-06-08, 2019-06-09…
+$ Time       &lt;time&gt; 21:00:00, 15:00:00, 18:00:00, 21:00:00, 13:00:00, 15:30:00…
+$ Home       &lt;chr&gt; &quot;France&quot;, &quot;Germany&quot;, &quot;Spain&quot;, &quot;Norway&quot;, &quot;Australia&quot;, &quot;Brazi…
+$ Score      &lt;chr&gt; &quot;4 - 0&quot;, &quot;1 - 0&quot;, &quot;3 - 1&quot;, &quot;3 - 0&quot;, &quot;1 - 2&quot;, &quot;3 - 0&quot;, &quot;2 - …
+$ PKS        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ Away       &lt;chr&gt; &quot;Korea Rep&quot;, &quot;China PR&quot;, &quot;South Africa&quot;, &quot;Nigeria&quot;, &quot;Italy&quot;…
+$ Attendance &lt;dbl&gt; 45261, 15283, 12044, 11058, 15380, 17668, 13188, 25055, 107…
+$ Venue      &lt;fct&gt; Parc des Princes, Roazhon Park, Stade Oceane, Stade Auguste…
+$ Referee    &lt;chr&gt; &quot;Claudia Umpierrez&quot;, &quot;Marie-Soleil Beaudoin&quot;, &quot;Maria Carvaj…
+$ Notes      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li>Importing data part 2</li>
+</ul>
+
+<p>Looking at the outputs, we notice a few things about the data. First, we have some NAs to address. Second, most of the columns are of type character. </p>
+
+<pre><code class="r">summary(wwc_raw)
+</code></pre>
+
+<pre><code>             Round         Wk                Day           
+ Group stage    :36   Length:55          Length:55         
+ Round of 16    : 8   Class :character   Class :character  
+ Quarterfinals  : 4   Mode  :character   Mode  :character  
+ Semifinals     : 2                                        
+ 3rd-place match: 1                                        
+ Final          : 1                                        
+ NA&#39;s           : 3                                        
+      Date                Time              Home              Score          
+ Min.   :2019-06-07   Length:55         Length:55          Length:55         
+ 1st Qu.:2019-06-12   Class1:hms        Class :character   Class :character  
+ Median :2019-06-17   Class2:difftime   Mode  :character   Mode  :character  
+ Mean   :2019-06-18   Mode  :numeric                                         
+ 3rd Qu.:2019-06-23                                                          
+ Max.   :2019-07-07                                                          
+ NA&#39;s   :4                                                                   
+     PKS                Away             Attendance    
+ Length:55          Length:55          Min.   :  8009  
+ Class :character   Class :character   1st Qu.: 13476  
+ Mode  :character   Mode  :character   Median : 18934  
+                                       Mean   : 31777  
+                                       3rd Qu.: 22941  
+                                       Max.   :579000  
+                                       NA&#39;s   :3       
+                      Venue      Referee             Notes          
+ Parc des Princes        : 7   Length:55          Length:55         
+ Roazhon Park            : 7   Class :character   Class :character  
+ Stade Oceane            : 7   Mode  :character   Mode  :character  
+ Stade Auguste-Delaune II: 6                                        
+ Stade du Hainaut        : 6                                        
+ (Other)                 :18                                        
+ NA&#39;s                    : 4                                        
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li>Removing rows of NA</li>
+</ul>
+
+<p>We have 55 observations (rows) of 13 variables (columns). Hmmm, we know there were 52 games - why the extra rows? Also Round and Attendance each have three NA, and Date and Venue each have four NA. It looks like we have a few things to fix.</p>
+
+<ul>
+<li>Rows of NA</li>
+<li>Missing data values</li>
+<li>Multiple values in one column (look at Score and PKS)</li>
+<li>Column headers are a mix of upper- and lowercase letters</li>
+</ul>
+
+<p>The last issue is more of a preference. Having all the column names in the same case will make typing easier</p>
+
+<pre><code class="r"># Remove rows of NA
+wwc_1  &lt;- wwc_raw  %&gt;% 
+             rename_all(tolower)  %&gt;% 
+             filter(!is.na(round))
+
+# Get the dimensions and inspect the first 10 and last 10 rows
+
+head(wwc_1, 10)
+</code></pre>
+
+<pre><code># A tibble: 10 x 13
+   round  wk    day   date       time   home  score pks   away  attendance venue
+   &lt;fct&gt;  &lt;chr&gt; &lt;chr&gt; &lt;date&gt;     &lt;time&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;fct&gt;
+ 1 Group… 1     Fri   2019-06-07 21:00  Fran… 4 - 0 &lt;NA&gt;  Kore…      45261 Parc…
+ 2 Group… 1     Sat   2019-06-08 15:00  Germ… 1 - 0 &lt;NA&gt;  Chin…      15283 Roaz…
+ 3 Group… 1     Sat   2019-06-08 18:00  Spain 3 - 1 &lt;NA&gt;  Sout…      12044 Stad…
+ 4 Group… 1     Sat   2019-06-08 21:00  Norw… 3 - 0 &lt;NA&gt;  Nige…      11058 Stad…
+ 5 Group… 1     Sun   2019-06-09 13:00  Aust… 1 - 2 &lt;NA&gt;  Italy      15380 Stad…
+ 6 Group… 1     Sun   NA         15:30  Braz… 3 - 0 &lt;NA&gt;  Jama…      17668 Stad…
+ 7 Group… 1     Sun   2019-06-09 18:00  Engl… 2 - 1 &lt;NA&gt;  Scot…      13188 Stad…
+ 8 Group… 1     Mon   2019-06-10 18:00  Arge… 0 - 0 &lt;NA&gt;  Japan      25055 Parc…
+ 9 Group… 1     Mon   2019-06-10 21:00  Cana… 1 - 0 &lt;NA&gt;  Came…      10710 Stad…
+10 Group… 1     Tue   2019-06-11 15:00  New … 0 - 1 &lt;NA&gt;  Neth…      10654 Stad…
+# … with 2 more variables: referee &lt;chr&gt;, notes &lt;chr&gt;
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li>Replacing NA</li>
+</ul>
+
+<p>We now have 52 rows. Each row corresponds to a match in the tournament. But, it looks like there are a couple NA still lurking about in date and venue. Using colSums() and is.na() we can check to see how many NA are in each column.</p>
+
+<pre><code class="r"># Housekeeping
+wwc_2 &lt;- wwc_1
+
+# Find and replace NA in column date
+index_date &lt;- which(is.na(wwc_2$date))
+
+wwc_2[index_date, ]
+</code></pre>
+
+<pre><code># A tibble: 1 x 13
+  round  wk    day   date       time   home  score pks   away  attendance venue 
+  &lt;fct&gt;  &lt;chr&gt; &lt;chr&gt; &lt;date&gt;     &lt;time&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;fct&gt; 
+1 Group… 1     Sun   NA         15:30  Braz… 3 - 0 &lt;NA&gt;  Jama…      17668 Stade…
+# … with 2 more variables: referee &lt;chr&gt;, notes &lt;chr&gt;
+</code></pre>
+
+<pre><code class="r">wwc_2$date[index_date] &lt;- &quot;2019-06-09&quot;
+
+#wwc_2[index_date, ]
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li>Replacing NA</li>
+</ul>
+
+<p>We now have 52 rows. Each row corresponds to a match in the tournament. But, it looks like there are a couple NA still lurking about in date and venue. Using colSums() and is.na() we can check to see how many NA are in each column.</p>
+
+<pre><code class="r"># Find and replace NA in column venue
+index_venue &lt;- which(is.na(wwc_2$venue))
+
+wwc_2[index_venue, ]
+</code></pre>
+
+<pre><code># A tibble: 1 x 13
+  round   wk    day   date       time   home  score pks   away  attendance venue
+  &lt;fct&gt;   &lt;chr&gt; &lt;chr&gt; &lt;date&gt;     &lt;time&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;fct&gt;
+1 Semifi… SMIF  Tue   2019-07-02 21:00  Engl… 1 - 2 &lt;NA&gt;  USA        53512 &lt;NA&gt; 
+# … with 2 more variables: referee &lt;chr&gt;, notes &lt;chr&gt;
+</code></pre>
+
+<pre><code class="r">wwc_2$venue[index_venue] &lt;- &quot;Groupama Stadium&quot;
+
+#wwc_2[index_venue, ]
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li>separate() and replace_na()</li>
+</ul>
+
+<p>The data are looking good, but it is a good idea to get the two data points in score and two data points in pks into their own columns for future data sleuthing.</p>
+
+<p>For this task we&#39;re going to employ the functionality of separate(), mutate(), and replace_na(). </p>
+
+<pre><code class="r"># Separate columns and replace NA
+wwc_3  &lt;- wwc_2  %&gt;% 
+  separate(score, c(&quot;home_score&quot;, &quot;away_score&quot;), sep =  &quot;-&quot;, convert = TRUE)  %&gt;% 
+  separate(pks, c(&quot;home_pks&quot;, &quot;away_pks&quot;), sep = &quot;-&quot;, convert = TRUE)  %&gt;% 
+  mutate(home_pks = replace_na(home_pks, 0),
+         away_pks = replace_na(away_pks, 0))
+
+# Print the data
+wwc_3
+</code></pre>
+
+<pre><code># A tibble: 52 x 15
+   round    wk    day   date       time   home    home_score away_score home_pks
+   &lt;fct&gt;    &lt;chr&gt; &lt;chr&gt; &lt;date&gt;     &lt;time&gt; &lt;chr&gt;        &lt;dbl&gt;      &lt;int&gt;    &lt;dbl&gt;
+ 1 Group s… 1     Fri   2019-06-07 21:00  France           4          0        0
+ 2 Group s… 1     Sat   2019-06-08 15:00  Germany          1          0        0
+ 3 Group s… 1     Sat   2019-06-08 18:00  Spain            3          1        0
+ 4 Group s… 1     Sat   2019-06-08 21:00  Norway           3          0        0
+ 5 Group s… 1     Sun   2019-06-09 13:00  Austra…          1          2        0
+ 6 Group s… 1     Sun   2019-06-09 15:30  Brazil           3          0        0
+ 7 Group s… 1     Sun   2019-06-09 18:00  England          2          1        0
+ 8 Group s… 1     Mon   2019-06-10 18:00  Argent…          0          0        0
+ 9 Group s… 1     Mon   2019-06-10 21:00  Canada           1          0        0
+10 Group s… 1     Tue   2019-06-11 15:00  New Ze…          0          1        0
+# … with 42 more rows, and 6 more variables: away_pks &lt;dbl&gt;, away &lt;chr&gt;,
+#   attendance &lt;dbl&gt;, venue &lt;fct&gt;, referee &lt;chr&gt;, notes &lt;chr&gt;
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="mediaInline slideContent" >
+<ul>
+<li>Plotting for outliers</li>
+</ul>
+
+<p>We corrected the NA in the date and venue columns, and separated the score and pks columns to have one score per column.</p>
+
+<p>Let&#39;s plot the data to see if there are any outliers.</p>
+
+<pre><code class="r"># Housekeeping for plot size
+options(repr.plot.width=8, repr.plot.height=6)
+
+# Load package
+library(ggplot2)
+
+# Make a boxplot of attendance by venue and add the point data
+ggplot(wwc_3, aes(venue, attendance)) +
+  geom_boxplot() +
+  geom_jitter(color = &quot;red&quot;, size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+</code></pre>
+
+<p><img src="data:image/png;base64,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BCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CCHi/24/SQwACEIAABJISQMAnxUIkBCAAAQhAwG8CkQj4adOmlZnKli1b7PPPP7fFixcXXDtz5kybPn26+6xbt64gngMIQAACEIAABEomkHYBP2bMGLv11ltLzjX4df78+QXn5OfnW79+/ezLL7+0/v3726xZs2zjxo0unQ8//ND0WblyZcH5HEAAAhCAAAQgUDKBKiX/XLZfly5dauPGjbOGDRsWXDhnzhx7++23rW3bttaxY0erUuWnLAcPHmz33XefO2/GjBnWvHlz6927tx1yyCH25ptvWpcuXezYY4+1s846a7v0dMGnn35qixYtctcefvjhBWm6iIj/5OXluRxq1KgRcU7RJV+p0k/9Ot/roLbwuQ6VK1c23+ug51n3k8/tkAt1qFq1qvftUK1aNdMz4fO9FNczHcqlwlIjbQJeo/CHH37YrrzySrvhhhtcPlKr33///XbTTTfZiBEj3KdFixZupL5gwQIbNmyYtWrVyjZt2uQEvC5q1qyZE95ff/21TZ061dasWeNG+wMGDLDatWu7dMePH2+TJ092x+3bt7datWq540z+iSPPdNZPN4TPdVD5c6EOEo60Qzrv7LKnpfvI93ZQ+SVcfL6XVAff2yEU8JluB01xJwtpE/Avv/yy7bzzzibBLcE+b9480+h99erVNmTIENu8ebOpl6kReps2bWz06NHuW6N9nbtt2zZXvq1bt1r16tWtW7du1rVrV1Ovbvjw4TZq1Cg79dRT3TnqRIRh4cKFTp0f/h/1t27Apk2b2vLly6POKrL0dRM2btzY6zpo1NWoUSOv66DnoUGDBl7XQc9nvXr1vK6D3jd16tTxvg4aAPn8XtLIvWbNmrZixYrI3n1RJ6zBqmRZpttB92+ykDYB36RJEyfMJ06c6EbdUrvvueeeTjXft29fW7Zsmc2ePdt22WUX99GL7dBDD3VlUg/6o48+csdz5861li1bmkbp9evXt3bt2tmGDRtM6RMgAAEIQAACECgdgbQJ+E6dOpk+ChMmTLDOnTu7Y420Bg0a5Ho0F198sYvTn7vvvrvguFWgpteIUgZ2mscfOHCgG5XrHKn21TPVXDwBAhCAAAQgAIHSEUibgE/M7m9/+1vBv3369HFz7FLllRQuvfTS7c6rW7eu3XHHHdvFlXQ9v0EAAhCAAAQg8DOBtC+T+znpn492JNzDM5OdlywuPJ9vCEAAAhCAAASSE8iIgE+eNbEQgAAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFAAEfFVnShQAEIAABCMRIAAEfI3yyhgAEIAABCERFoMqOEl61apW99tprtmHDBttvv/2sbdu21qRJkx1dxu8QgAAEIAABCMRIoMQR/Nq1a619+/Y2ceJEGzt2rC1btsz9v2nTphiLTNYQgAAEIAABCOyIQIkCftiwYdanTx+78sorXTpnnHGG9erVy8aNG7ejdPkdAhCAAAQgAIEYCZQo4OvWretU84nlmzVrlrVs2TIximMIQAACEIAABLKMQIlz8GeeeaYddNBBTj3/7bffWrdu3Vzx99577yyrBsWBAAQgAAEIQCCRQIkCvlq1ajZ16lT74IMPbPz48dalSxfr0KFD4vUcQwACEIAABCCQhQRKFPAq77Zt2+zoo4+2rl272n//+1/Ly8vLwmpQJAhAAAIQgAAEEgmUOAf//fff2yGHHGJffPGFu+a+++6zk046KfF6jiEAAQhAAAIQyEICJQr4l156yf76179ax44dXdEfe+wx22OPPdyyuSysC0WCAAQgAAEIQOB/BEoU8Fu3brVFixZtB2v16tVWu3bt7eL4BwIQgAAEIACB7CJQ4hx8z5493dy7HN0ceOCB9vHHH1t+fr7zZpdd1aA0EIAABCAAAQgkEihxBK/17qNGjXLW8xLsN998s73zzjuJ13MMAQhAAAIQgEAWEihxBK/yLl261OTwZq+99rJvvvnGfTp37mzNmjXLwupQJAhAAAIQgEDZCGg5uJy4lTdopZmM01999dXyJmV16tSxE088sVzplCjgNXo/++yz3Qi+Vq1aBRkdeeSRCPgCGhxAAAIQgIDPBJ588kmrVKlSueVa5cqV3WB45syZ5cKh5envvvuuM3CvXr16ymmVKOBHjhxpDzzwgJ177rkpZ8CFEIAABCAAgWwmoCnoCy+8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" alt="plot of chunk unnamed-chunk-51"/></p>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li>What to do with the outlier?</li>
+</ul>
+
+<p>What’s up with the attendance for Groupama Stadium? One data point is almost 600,000 (6e+05) while all the other data points are less than 100,000. </p>
+
+<p>There is a mistakenly added an extra 0 in the attendance variable</p>
+
+<pre><code class="r"># Print the number of games played at each venue, and the min and max attendance at each venue
+wwc_3  %&gt;% 
+  group_by(venue)  %&gt;% 
+  summarize(nb_of_games = n(), 
+           min_attendance = min(attendance), 
+           max_attendance = max(attendance))
+</code></pre>
+
+<pre><code># A tibble: 9 x 4
+  venue                    nb_of_games min_attendance max_attendance
+  &lt;fct&gt;                          &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+1 Parc des Princes                   7          20011          45595
+2 Roazhon Park                       7          13201          28267
+3 Stade Oceane                       7          10654          23965
+4 Stade Auguste-Delaune II           6          11058          19633
+5 Stade du Hainaut                   6          15380          22600
+6 Stade des Alpes                    5          11252          17988
+7 Stade de Nice                      6           9354          34872
+8 Stade de la Mosson                 5           8009          17492
+9 Groupama Stadium                   3          48452         579000
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<pre><code class="r"># Correct the outlier
+wwc_4  &lt;- wwc_3  %&gt;% 
+  mutate(attendance = replace(attendance, which(attendance == 579000), 57900))
+
+# Print the number of games played at each venue, and the min and max attendance at each venue
+wwc_4  %&gt;% 
+  group_by(venue)  %&gt;% 
+  summarize(nb_of_games = n(), 
+           min_attendance = min(attendance), 
+           max_attendance = max(attendance))
+</code></pre>
+
+<pre><code># A tibble: 9 x 4
+  venue                    nb_of_games min_attendance max_attendance
+  &lt;fct&gt;                          &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+1 Parc des Princes                   7          20011          45595
+2 Roazhon Park                       7          13201          28267
+3 Stade Oceane                       7          10654          23965
+4 Stade Auguste-Delaune II           6          11058          19633
+5 Stade du Hainaut                   6          15380          22600
+6 Stade des Alpes                    5          11252          17988
+7 Stade de Nice                      6           9354          34872
+8 Stade de la Mosson                 5           8009          17492
+9 Groupama Stadium                   3          48452          57900
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Women&#x27;s Football World Cup 2019 Data</h3>
+<div class="slideContent" >
+<ul>
+<li><p>Questions:</p>
+
+<ul>
+<li>Which match had the highest attendance during the tournament?</li>
+<li>In what stadium was the match with the highest attendance played?</li>
+</ul></li>
+</ul>
+
+<pre><code class="r">wwc_4 %&gt;% 
+  select(round, attendance, venue) %&gt;% 
+  arrange(desc(attendance))
+</code></pre>
+
+<pre><code># A tibble: 52 x 3
+   round         attendance venue           
+   &lt;fct&gt;              &lt;dbl&gt; &lt;fct&gt;           
+ 1 Final              57900 Groupama Stadium
+ 2 Semifinals         53512 Groupama Stadium
+ 3 Semifinals         48452 Groupama Stadium
+ 4 Quarterfinals      45595 Parc des Princes
+ 5 Group stage        45594 Parc des Princes
+ 6 Group stage        45261 Parc des Princes
+ 7 Round of 16        38078 Parc des Princes
+ 8 Group stage        34872 Stade de Nice   
+ 9 Group stage        28267 Roazhon Park    
+10 Group stage        28205 Parc des Princes
+# … with 42 more rows
 </code></pre>
 
 </div>
